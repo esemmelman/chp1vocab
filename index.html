@@ -144,8 +144,28 @@ button span { display: block; color: #465e54; }
 </main>
 <script>
 document.querySelectorAll('button').forEach((button) => {
+  const term = button.querySelector('strong').textContent;
+  const storageKey = 'chp1vocab:crossed-out:' + term;
+
+  try {
+    button.setAttribute('aria-pressed', String(localStorage.getItem(storageKey) === 'true'));
+  } catch {
+    // The page still works when the browser blocks storage.
+  }
+
   button.addEventListener('click', () => {
-    button.setAttribute('aria-pressed', String(button.getAttribute('aria-pressed') === 'false'));
+    const crossedOut = button.getAttribute('aria-pressed') === 'false';
+    button.setAttribute('aria-pressed', String(crossedOut));
+
+    try {
+      if (crossedOut) {
+        localStorage.setItem(storageKey, 'true');
+      } else {
+        localStorage.removeItem(storageKey);
+      }
+    } catch {
+      // Keep the current view usable even if saving fails.
+    }
   });
 });
 </script>
